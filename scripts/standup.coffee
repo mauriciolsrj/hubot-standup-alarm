@@ -122,12 +122,12 @@ module.exports = (robot) ->
   'use strict'
   # Constants.
   STANDUP_MESSAGES = [
-    'Hora da daily pessoal!'
-    'Partiu? Daily meeting.'
+    'Daily meeting pessoal!!! Partiu partiu!'
+    'Opa! Chegou a hora da nossa reuniãozinha diária.'
     'É hora da nossa daily!'
     'Pessoal, vamos fazer um daily rapidinho até porque hoje está meio corrido pra mim.'
-    'Humanos, é hora da daily!'
-    'daily! Vamos, vamos, vamos!'
+    'Humanos, é hora da reunião diária!'
+    'Hora da reunião diária! Vamos, vamos, vamos!'
   ]
   PREPEND_MESSAGE = process.env.HUBOT_STANDUP_PREPEND or ''
   if PREPEND_MESSAGE.length > 0 and PREPEND_MESSAGE.slice(-1) != ' '
@@ -173,7 +173,7 @@ module.exports = (robot) ->
       ))
       msg.send standupsText.join('\n')
     return
-  robot.respond /listar daily/i, (msg) ->
+  robot.respond /listar daily por canal/i, (msg) ->
     standups = getStandups()
     if standups.length == 0
       msg.send 'Não, porque não tem nenhuma..'
