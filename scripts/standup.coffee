@@ -80,6 +80,7 @@ module.exports = (robot) ->
     return
 
   # Finds the room for most adaptors
+
   findRoom = (msg) ->
     room = msg.envelope.room
     if _.isUndefined(room)
@@ -121,57 +122,50 @@ module.exports = (robot) ->
   'use strict'
   # Constants.
   STANDUP_MESSAGES = [
-    'Standup time!'
-    'Time for standup, y\'all.'
-    'It\'s standup time once again!'
-    'Get up, stand up (it\'s time for our standup)'
-    'Standup time. Get up, humans'
-    'Standup time! Now! Go go go!'
+    'Hora da daily pessoal!'
+    'Partiu? Daily meeting.'
+    'É hora da nossa daily!'
+    'Pessoal, vamos fazer um daily rapidinho até porque hoje está meio corrido pra mim.'
+    'Humanos, é hora da daily!'
+    'Reunião diária! Vamos, vamos, vamos!'
   ]
   PREPEND_MESSAGE = process.env.HUBOT_STANDUP_PREPEND or ''
   if PREPEND_MESSAGE.length > 0 and PREPEND_MESSAGE.slice(-1) != ' '
     PREPEND_MESSAGE += ' '
-
   # Check for standups that need to be fired, once a minute
   # Monday to Friday.
   new cronJob('1 * * * * 1-5', checkStandups, null, true)
-
-  robot.respond /delete all standups for (.+)$/i, (msg) ->
-    room = msg.match[1]
-    standupsCleared = clearAllStandupsForRoom(room)
-    msg.send 'Deleted ' + standupsCleared + ' standups for ' + room
-
-  robot.respond /delete all standups$/i, (msg) ->
+  robot.respond /excluir reuniões diárias/i, (msg) ->
     standupsCleared = clearAllStandupsForRoom(findRoom(msg))
     msg.send 'Deleted ' + standupsCleared + ' standup' + (if standupsCleared == 1 then '' else 's') + '. No more standups for you.'
     return
-  robot.respond /delete ([0-5]?[0-9]:[0-5]?[0-9]) standup/i, (msg) ->
+  robot.respond /excluir ([0-5]?[0-9]:[0-5]?[0-9]) reunião diária/i, (msg) ->
     time = msg.match[1]
     standupsCleared = clearSpecificStandupForRoom(findRoom(msg), time)
     if standupsCleared == 0
-      msg.send 'Nice try. You don\'t even have a standup at ' + time
+      msg.send 'Boa tentativa mané, mas você não tem nenhuma daily nesse horário.' + time
     else
-      msg.send 'Deleted your ' + time + ' standup.'
+      msg.send 'Cancelei a reunião das ' + time
     return
-  robot.respond /create standup ((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9])$/i, (msg) ->
+  robot.respond /criar reunião diária ((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9])$/i, (msg) ->
     time = msg.match[1]
     room = findRoom(msg)
     saveStandup room, time
-    msg.send 'Ok, from now on I\'ll remind this room to do a standup every weekday at ' + time
+    msg.send 'Ok, pode deixar que a partir de agora eu lembro vocês da daily às ' + time
     return
-  robot.respond /create standup ((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9]) UTC([+-]([0-9]|1[0-3]))$/i, (msg) ->
+  robot.respond /criar reunião diária ((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9]) UTC([+-]([0-9]|1[0-3]))$/i, (msg) ->
     time = msg.match[1]
     utc = msg.match[2]
     room = findRoom(msg)
     saveStandup room, time, utc
-    msg.send 'Ok, from now on I\'ll remind this room to do a standup every weekday at ' + time + ' UTC' + utc
+    msg.send 'Ok, pode deixar que a partir de agora eu lembro vocês da daily às ' + time + ' UTC' + utc
     return
-  robot.respond /list standups$/i, (msg) ->
+  robot.respond /listar reuniões diárias$/i, (msg) ->
     standups = getStandupsForRoom(findRoom(msg))
     if standups.length == 0
-      msg.send 'Well this is awkward. You haven\'t got any standups set :-/'
+      msg.send 'É constrangedor dizer isso, mas você ainda não marcou nenhuma daily por aqui.'
     else
-      standupsText = [ 'Here\'s your standups:' ].concat(_.map(standups, (standup) ->
+      standupsText = [ 'Aqui estão suas reuniÕes diárias:' ].concat(_.map(standups, (standup) ->
         if standup.utc
           standup.time + ' UTC' + standup.utc
         else
@@ -179,13 +173,13 @@ module.exports = (robot) ->
       ))
       msg.send standupsText.join('\n')
     return
-  robot.respond /list standups in every room/i, (msg) ->
+  robot.respond /listar reuniões diárias/i, (msg) ->
     standups = getStandups()
     if standups.length == 0
-      msg.send 'No, because there aren\'t any.'
+      msg.send 'Não, porque não tem nenhuma..'
     else
-      standupsText = [ 'Here\'s the standups for every room:' ].concat(_.map(standups, (standup) ->
-        'Room: ' + standup.room + ', Time: ' + standup.time
+      standupsText = [ 'Aqui estão as reuniões por canal:' ].concat(_.map(standups, (standup) ->
+        'Canal: ' + standup.room + ', Horário: ' + standup.time
       ))
       msg.send standupsText.join('\n')
     return
