@@ -135,7 +135,7 @@ module.exports = (robot) ->
   # Check for standups that need to be fired, once a minute
   # Monday to Friday.
   new cronJob('1 * * * * 1-5', checkStandups, null, true)
-  robot.respond /excluir daily/i, (msg) ->
+  robot.respond /excluir todas as daily/i, (msg) ->
     standupsCleared = clearAllStandupsForRoom(findRoom(msg))
     msg.send 'Excluído um total de ' + standupsCleared + ' registro' + (if standupsCleared == 1 then '' else 's') + '. No more standups for you.'
     return
