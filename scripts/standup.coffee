@@ -135,15 +135,15 @@ module.exports = (robot) ->
   # Check for standups that need to be fired, once a minute
   # Monday to Friday.
   new cronJob('1 * * * * 1-5', checkStandups, null, true)
-  robot.respond /excluir todas as daily/i, (msg) ->
+  robot.respond /excluir daily todas/i, (msg) ->
     standupsCleared = clearAllStandupsForRoom(findRoom(msg))
-    msg.send 'Excluído um total de ' + standupsCleared + ' registro' + (if standupsCleared == 1 then '' else 's') + '. No more standups for you.'
+    msg.send 'Excluído um total de ' + standupsCleared + ' registro' + (if standupsCleared == 1 then '' else 's') + '.'
     return
   robot.respond /excluir daily ([0-5]?[0-9]:[0-5]?[0-9])/i, (msg) ->
     time = msg.match[1]
     standupsCleared = clearSpecificStandupForRoom(findRoom(msg), time)
     if standupsCleared == 0
-      msg.send 'Boa tentativa mané, mas você não tem nenhuma daily nesse horário.' + time
+      msg.send 'Boa tentativa, mas você não tem nenhuma daily nesse horário.' + time
     else
       msg.send 'Cancelei a reunião das ' + time
     return
