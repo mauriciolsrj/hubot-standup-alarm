@@ -127,7 +127,7 @@ module.exports = (robot) ->
     'É hora da nossa daily!'
     'Pessoal, vamos fazer um daily rapidinho até porque hoje está meio corrido pra mim.'
     'Humanos, é hora da daily!'
-    'Reunião diária! Vamos, vamos, vamos!'
+    'daily! Vamos, vamos, vamos!'
   ]
   PREPEND_MESSAGE = process.env.HUBOT_STANDUP_PREPEND or ''
   if PREPEND_MESSAGE.length > 0 and PREPEND_MESSAGE.slice(-1) != ' '
@@ -135,11 +135,11 @@ module.exports = (robot) ->
   # Check for standups that need to be fired, once a minute
   # Monday to Friday.
   new cronJob('1 * * * * 1-5', checkStandups, null, true)
-  robot.respond /excluir reuniões diárias/i, (msg) ->
+  robot.respond /excluir daily/i, (msg) ->
     standupsCleared = clearAllStandupsForRoom(findRoom(msg))
-    msg.send 'Deleted ' + standupsCleared + ' standup' + (if standupsCleared == 1 then '' else 's') + '. No more standups for you.'
+    msg.send 'Excluído um total de ' + standupsCleared + ' registro' + (if standupsCleared == 1 then '' else 's') + '. No more standups for you.'
     return
-  robot.respond /excluir ([0-5]?[0-9]:[0-5]?[0-9]) reunião diária/i, (msg) ->
+  robot.respond /excluir daily ([0-5]?[0-9]:[0-5]?[0-9])/i, (msg) ->
     time = msg.match[1]
     standupsCleared = clearSpecificStandupForRoom(findRoom(msg), time)
     if standupsCleared == 0
@@ -147,20 +147,20 @@ module.exports = (robot) ->
     else
       msg.send 'Cancelei a reunião das ' + time
     return
-  robot.respond /criar reunião diária ((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9])$/i, (msg) ->
+  robot.respond /criar daily ((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9])$/i, (msg) ->
     time = msg.match[1]
     room = findRoom(msg)
     saveStandup room, time
     msg.send 'Ok, pode deixar que a partir de agora eu lembro vocês da daily às ' + time
     return
-  robot.respond /criar reunião diária ((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9]) UTC([+-]([0-9]|1[0-3]))$/i, (msg) ->
+  robot.respond /criar daily ((?:[01]?[0-9]|2[0-4]):[0-5]?[0-9]) UTC([+-]([0-9]|1[0-3]))$/i, (msg) ->
     time = msg.match[1]
     utc = msg.match[2]
     room = findRoom(msg)
     saveStandup room, time, utc
     msg.send 'Ok, pode deixar que a partir de agora eu lembro vocês da daily às ' + time + ' UTC' + utc
     return
-  robot.respond /listar reuniões diárias$/i, (msg) ->
+  robot.respond /listar daily$/i, (msg) ->
     standups = getStandupsForRoom(findRoom(msg))
     if standups.length == 0
       msg.send 'É constrangedor dizer isso, mas você ainda não marcou nenhuma daily por aqui.'
@@ -173,7 +173,7 @@ module.exports = (robot) ->
       ))
       msg.send standupsText.join('\n')
     return
-  robot.respond /listar reuniões diárias/i, (msg) ->
+  robot.respond /listar daily/i, (msg) ->
     standups = getStandups()
     if standups.length == 0
       msg.send 'Não, porque não tem nenhuma..'
